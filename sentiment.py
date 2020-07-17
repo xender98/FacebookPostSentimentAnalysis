@@ -4,8 +4,6 @@ import dateutil.parser as dateparser
 from pylab import *
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-##### Connections to Facebook by Graph API
-#  here is token which you get from Facebook Graph APIs, every time using program, you need update this token
 token = "EAACuZBKdM2wABAEXZA8bpmGIjQZCZApa10BeURphB0q8nEIUg4HaoeazMHWvjRmHIFKSsiwgg0T6SgHstVL83lYp9seZAkTqdMXczQU9ZAv4FfGzfJapZAVtrZBN6gqW3df5xVGbzzaHXqZAfOWxdCKNf4gimfSDL2j4E4XHboBQreIoN2FWULDHqKCuuHBWgBcIZD"
 graph = None
 
@@ -17,7 +15,6 @@ xx = []
 yyPos = []
 yyNeg = []
 
-# Function get all coments from id-post
 def getComments(id_post):
     sentencesComments = []
     timeComments = []
@@ -36,7 +33,6 @@ def getComments(id_post):
     return sentencesComments, timeComments
 
 
-#  Sentiment Analysis comment using NLTK library
 def sentimentAnalysis(sentencesComments):
     posY = []
     negY = []
@@ -57,7 +53,6 @@ def sentimentAnalysis(sentencesComments):
 
     return posY, negY
 
-# Convert time comment to coordinate X in Graph
 def timeToX(timeComments, created_time_post):
     timeX = []
     for timeComment in timeComments:
@@ -126,27 +121,18 @@ def main_real_time_analysis():
     graph = facebook.GraphAPI(token)
     posts = graph.get_objects(ids=post_ids)
 
-    # create observation
     dr = drawgraph()
     dr.observe('draw a new point',  dr.new_point)
-    # create graph real-time
     plt.ion()
     fig=plt.figure()
-    # listen keyboard to exit
     fig.canvas.mpl_connect('key_press_event', press)
 
-    #### Draw graph for data which have existed
-    # Get created time of post
     created_time_post = dateparser.parse(posts[post_ids[0]]['created_time'])
     print('Created Time of Post = {0}'.format(created_time_post))
-
-    # Get comment of post
     sentencesComments, timeComments = getComments(post_ids[0])
-    # Convert time data
+
     timeX = timeToX(timeComments, created_time_post)
-    # Convert sentiment analysis data
     posY, negY = sentimentAnalysis(sentencesComments)
-    # sort data
     sortCommentbyTime(timeX, posY, negY)
 
     lastMoment = 0
@@ -158,9 +144,7 @@ def main_real_time_analysis():
     plt.plot(xx, yyNeg, color = 'r')
     drawAnnotate()
     plt.show()
-    #############
-    ############# Real-time graph ####
-    # Real-time
+
     while stop == False:
         sentencesCommentsCurr, timeCommentsCurr = getComments(post_ids[0])
         
